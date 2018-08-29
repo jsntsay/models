@@ -169,6 +169,8 @@ class Cifar10Model(resnet_model.Model):
 
     num_blocks = (resnet_size - 2) // 6
 
+    ##### HYPERPARAMETERS
+    ##### The actual parameters that are passed into this model
     super(Cifar10Model, self).__init__(
         resnet_size=resnet_size,
         bottleneck=False,
@@ -189,8 +191,12 @@ class Cifar10Model(resnet_model.Model):
 
 def cifar10_model_fn(features, labels, mode, params):
   """Model function for CIFAR-10."""
+  ##### INPUT
+  ##### constants are defined above
   features = tf.reshape(features, [-1, _HEIGHT, _WIDTH, _NUM_CHANNELS])
 
+  ##### HYPERPARAMETERS
+  ##### parameters to running the loop
   learning_rate_fn = resnet_run_loop.learning_rate_with_decay(
       batch_size=params['batch_size'], batch_denom=128,
       num_images=_NUM_IMAGES['train'], boundary_epochs=[100, 150, 200],
@@ -225,7 +231,8 @@ def cifar10_model_fn(features, labels, mode, params):
       fine_tune=params['fine_tune']
   )
 
-
+##### HYPERPARAMETERS
+##### flags that are set in the beginning, specifically: resnet_size, train_epochs, epochs_between_evals, batch_size
 def define_cifar_flags():
   resnet_run_loop.define_resnet_flags()
   flags.adopt_module_key_flags(resnet_run_loop)
@@ -245,6 +252,8 @@ def run_cifar(flags_obj):
   """
   input_function = (flags_obj.use_synthetic_data and get_synth_input_fn()
                     or input_fn)
+##### INPUT
+##### Specifically the "shape" that is passed in with the values being at the top of the file
   resnet_run_loop.resnet_main(
       flags_obj, cifar10_model_fn, input_function, DATASET_NAME,
       shape=[_HEIGHT, _WIDTH, _NUM_CHANNELS])

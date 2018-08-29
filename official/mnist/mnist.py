@@ -27,7 +27,8 @@ from official.utils.logs import hooks_helper
 from official.utils.misc import distribution_utils
 from official.utils.misc import model_helpers
 
-
+##### Hyperparameter
+##### This is a constant that is referenced later
 LEARNING_RATE = 1e-4
 
 
@@ -50,6 +51,9 @@ def create_model(data_format):
   Returns:
     A tf.keras.Model.
   """
+
+  ##### INPUT SHAPE
+  ##### This seems to explictly set the dimensions of the input shape
   if data_format == 'channels_first':
     input_shape = [1, 28, 28]
   else:
@@ -92,6 +96,8 @@ def define_mnist_flags():
   flags_core.define_performance(num_parallel_calls=False)
   flags_core.define_image()
   flags.adopt_module_key_flags(flags_core)
+  ##### HYPERPARAMETERS
+  ##### Flags that are set, these (batch_size and train_epochs) are common hyperparameters for models
   flags_core.set_defaults(data_dir='/tmp/mnist_data',
                           model_dir='/tmp/mnist_model',
                           batch_size=100,
@@ -107,10 +113,14 @@ def model_fn(features, labels, mode, params):
 
   if mode == tf.estimator.ModeKeys.PREDICT:
     logits = model(image, training=False)
+    ##### OUTPUT
+    ##### This is used in the below to define what the estimator returns on prediction
     predictions = {
         'classes': tf.argmax(logits, axis=1),
         'probabilities': tf.nn.softmax(logits),
     }
+    ##### OUTPUT
+    ##### This is apparently what the estimator returns when predicting, the classify returns the classes and probabilities of each
     return tf.estimator.EstimatorSpec(
         mode=tf.estimator.ModeKeys.PREDICT,
         predictions=predictions,
@@ -190,6 +200,8 @@ def run_mnist(flags_obj):
     # randomness, while smaller sizes use less memory. MNIST is a small
     # enough dataset that we can easily shuffle the full epoch.
     ds = dataset.train(flags_obj.data_dir)
+    ##### HYPERPARAMETER
+    ##### buffer_size here seems to be a hyperparameter given the above comment
     ds = ds.cache().shuffle(buffer_size=50000).batch(flags_obj.batch_size)
 
     # Iterate through the dataset a set number (`epochs_between_evals`) of times

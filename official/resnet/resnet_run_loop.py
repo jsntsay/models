@@ -243,11 +243,15 @@ def resnet_model_fn(features, labels, mode, model_class,
   # fp32 for numerical stability.
   logits = tf.cast(logits, tf.float32)
 
+  ##### OUTPUT
+  ##### Defines what the estimator returns in predict mode as below
   predictions = {
       'classes': tf.argmax(logits, axis=1),
       'probabilities': tf.nn.softmax(logits, name='softmax_tensor')
   }
 
+  ##### OUTPUT
+  ##### uses predictions above in "predict"
   if mode == tf.estimator.ModeKeys.PREDICT:
     # Return the predictions and the specification for serving a SavedModel
     return tf.estimator.EstimatorSpec(
@@ -398,6 +402,8 @@ def resnet_main(
   else:
     warm_start_settings = None
 
+##### HYPERPARAMETERS
+##### actual parameters sent to the estimator
   classifier = tf.estimator.Estimator(
       model_fn=model_function, model_dir=flags_obj.model_dir, config=run_config,
       warm_start_from=warm_start_settings, params={

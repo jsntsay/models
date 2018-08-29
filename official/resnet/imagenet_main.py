@@ -295,11 +295,15 @@ def imagenet_model_fn(features, labels, mode, params):
     warmup = True
     base_lr = .128
 
+##### HYPERPARAMETERS
+##### parameters passed into the run loop
   learning_rate_fn = resnet_run_loop.learning_rate_with_decay(
       batch_size=params['batch_size'], batch_denom=256,
       num_images=_NUM_IMAGES['train'], boundary_epochs=[30, 60, 80, 90],
       decay_rates=[1, 0.1, 0.01, 0.001, 1e-4], warmup=warmup, base_lr=base_lr)
 
+##### HYPERPARAMETERS
+##### the literal parameters that are passed to the model here
   return resnet_run_loop.resnet_model_fn(
       features=features,
       labels=labels,
@@ -317,7 +321,6 @@ def imagenet_model_fn(features, labels, mode, params):
       fine_tune=params['fine_tune']
   )
 
-
 def define_imagenet_flags():
   resnet_run_loop.define_resnet_flags(
       resnet_size_choices=['18', '34', '50', '101', '152', '200'])
@@ -334,6 +337,8 @@ def run_imagenet(flags_obj):
   input_function = (flags_obj.use_synthetic_data and get_synth_input_fn()
                     or input_fn)
 
+##### INPUT
+##### specifically the shape that is defined here with the constants being up top
   resnet_run_loop.resnet_main(
       flags_obj, imagenet_model_fn, input_function, DATASET_NAME,
       shape=[_DEFAULT_IMAGE_SIZE, _DEFAULT_IMAGE_SIZE, _NUM_CHANNELS])
